@@ -150,7 +150,7 @@ class CUDASetup:
                     self.add_log_entry('')
                     self.generate_instructions()
                     raise Exception('CUDA SETUP: Setup Failed!')
-                self.lib = ct.cdll.LoadLibrary(binary_path)
+                self.lib = ct.cdll.LoadLibrary(str(binary_path))
             else:
                 self.add_log_entry(f"CUDA SETUP: Loading binary {binary_path}...")
                 self.lib = ct.cdll.LoadLibrary(binary_path)
@@ -356,7 +356,11 @@ def evaluate_cuda_setup():
     # since most installations will have the libcudart.so installed, but not the compiler
 
     if has_cublaslt:
-        binary_name = f"libbitsandbytes_cuda{cuda_version_string}.so"
+        # if windows set extension to dll
+        if os.name == 'nt':
+            binary_name = f"bitsandbytes_cuda{cuda_version_string}.dll"
+        else:
+            binary_name = f"libbitsandbytes_cuda{cuda_version_string}.so"
     else:
         "if not has_cublaslt (CC < 7.5), then we have to choose  _nocublaslt.so"
         binary_name = f"libbitsandbytes_cuda{cuda_version_string}_nocublaslt.so"
